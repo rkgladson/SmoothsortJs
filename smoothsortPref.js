@@ -29,8 +29,8 @@ var runTest = (function (smoothsort, performance, undefined) {
                 smoothsort(smoothM);
                 smoothSortTime = performance.now() - smoothSortTime;
 
-                nativeSet.push(nativeTime.toFixed(4)*1000);
-                smoothSet.push(smoothSortTime.toFixed(4)*1000);
+                nativeSet.push(Math.floor(nativeTime*1000));
+                smoothSet.push(Math.floor(smoothSortTime*1000));
             }
 
             results.push(
