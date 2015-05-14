@@ -46,7 +46,7 @@ var runTest = (function (smoothsort, performance, undefined) {
 })(smoothsort, performance);
 
 
-var testResults = (function forScienceYouMonster() {
+function forScienceYouMonster(runTest) {
     var output;
     function newArray(length) {
         var r = [], i;
@@ -97,4 +97,41 @@ var testResults = (function forScienceYouMonster() {
         semiSortedOrder: runTest(20, semiSortGen, comp)
     };
     return output;
-})(runTest);
+}
+
+
+function doScience(data) {
+    'use strict';
+    function sum(previousValue, currentValue) {
+        return previousValue + currentValue;
+    }
+
+    function ascending (apple, orange) {
+        return +(apple > orange) || -(apple < orange);
+    }
+
+    function analyze(value) {
+        var sortNative = value.nativeSet.sort(ascending);
+        var sortSmooth = value.smoothSet.sort(ascending);
+        var nativeMean = Math.floor(value.nativeSet.reduceRight(sum)/value.nativeSet.length);
+        var smoothMean = Math.floor(value.smoothSet.reduceRight(sum)/value.smoothSet.length);
+        return {
+            elements: value.elements,
+            nativeMean: nativeMean,
+            nativeMin: sortNative[0], nativeMax: sortNative[sortNative.length - 1],
+            smoothMean: smoothMean,
+            smoothMin: sortSmooth[0], smoothMax: sortSmooth[sortSmooth.length -1],
+            winner: nativeMean < smoothMean ? 'Native' : 'Smooth sort',
+            winnerBy: nativeMean < smoothMean ? smoothMean - nativeMean: nativeMean - smoothMean
+        };
+    }
+
+    return {
+        // Reverse the output so that the index will be 2^index-1 in length
+        reverseOrder: data.reverseOrder.map(analyze).reverse(),
+        randomOrder: data.randomOrder.map(analyze).reverse(),
+        semiSorted: data.semiSortedOrder.map(analyze).reverse()
+    };
+}
+
+var testResults = doScience(forScienceYouMonster(runTest));
