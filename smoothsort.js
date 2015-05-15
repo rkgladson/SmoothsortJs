@@ -77,7 +77,7 @@ var  smoothsort= (function (undefined) {
             if (b === 1) {
                 r -= 1;
                 p -= 1;
-                while ( p && !p%2) { // even(p)
+                while ( p && !(p%2)) { // even(p)
                     p = Math.floor(p/2);
                     tempB = b;
                     b = tempB + c + 1;
@@ -181,7 +181,7 @@ var  smoothsort= (function (undefined) {
             // 'let scope' variables :
             var r2, r3, tempB1, tempMR1, tempC1;
             while (p1 > 0) {
-                while (p1 && !p1%2) { // even(p1)
+                while (p1 && !(p1%2)) { // even(p1)
                     p1 = Math.floor(p1/2);
                     // up1
                     // [b1,c1] = [b1+ c1+1, b1];
