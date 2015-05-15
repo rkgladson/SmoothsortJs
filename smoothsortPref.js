@@ -19,11 +19,12 @@ var runTest = (function (smoothsort, performance, undefined) {
                 repI -= 1;
                 m = beforeEach(length);
 
-                nativeTime = performance.now();
-                mSorted = m.sort(comp);
-                nativeTime = performance.now() - nativeTime;
-
+                mSorted = m.slice();
                 smoothM = m.slice();
+
+                nativeTime = performance.now();
+                mSorted.sort(comp);
+                nativeTime = performance.now() - nativeTime;
 
                 smoothSortTime = performance.now();
                 smoothsort(smoothM);

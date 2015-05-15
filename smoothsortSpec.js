@@ -9,7 +9,7 @@
     function newArray(length, storeFn) {
         var r = [], i, store = typeof storeFn === 'function';
         for (i = length - 1; 0 <= i; i -= 1) {
-            r[i] = store ? storeFn() : undefined;
+            r[i] = store ? storeFn(i, length) : undefined;
         }
         return r;
     }
@@ -18,13 +18,13 @@
         return +(apple > orange) || -(apple < orange);
     }
 
-    function completelyRandomString() {
-        return Math.random().toString(36).replace(/0\./, '');
+    function reversedIndex(index ,length) {
+        return length - index;
     }
 
-    var m = newArray(Math.pow(2, 16) - 1, completelyRandomString),
+    var m = newArray(Math.pow(2, 16) - 1, reversedIndex),
         smoothM = smoothsort(m.slice()),
-        mSorted = m.sort(comp),
+        mSorted = m.slice().sort(comp),
         ok = true,
         i;
     for (i = m.length - 1; 0 <= i && ok; i -= 1 ) {
