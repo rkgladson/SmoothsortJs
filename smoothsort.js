@@ -16,7 +16,7 @@ var  smoothsort= (function (undefined) {
                     return valA <= valB;
                 };
         var tempC, tempB;
-        if (N < 1) { // Nothing to sort.
+        if (N < 2) { // Nothing to sort when less than 2 items
             return m;
         }
 
