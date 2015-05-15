@@ -5,17 +5,14 @@
 
 var  smoothsort= (function (undefined) {
     "use strict";
-    return function smoothSortReference(array, comparisonFn) {
+    return function smoothSortReference(array) {
         var r1,
             p = 1, b = 1, c = 1,
+            p1, b1, c1,
             q = 1,
             r = 0,
-            m = (array || []) ,
-            N = m.length,
-            comp = comparisonFn || function (valA, valB) {
-                    return valA <= valB;
-                };
-        var tempC, tempB;
+            m = (array || []),
+            N = m.length;
         if (N < 2) { // Nothing to sort when less than 2 items
             return m;
         }
@@ -23,46 +20,20 @@ var  smoothsort= (function (undefined) {
         while (q !== N) {
             r1 = r;
             if (p % 8 === 3) {
-                sift(b, c);
+                b1 = b; c1 = c; sift();
                 p = Math.floor((p + 1) / 4);
-                // [b, c] = [b + c + 1, b];
-                // Becomes:
-                tempB = b;
-                b = b + c +1;
-                c = tempB;
-                tempB = undefined;
-
-                // [b, c] = [b + c + 1, b];
-                // Becomes:
-                tempB = b;
-                b = b + c +1;
-                c = tempB;
-                tempB = undefined;
-
+                up(); up();
             } else if (p % 4 === 1) {
                 if (q + c < N) {
-                    sift(b, c);
+                    b1 = b; c1 = c; sift();
                 } else {
-                    trinkle(p, b, c);
+                    trinkle();
                 }
-                // down
-                // [b,c] = [c, b - c - 1];
-                // Becomes:
-                tempC = c;
-                c = b - c -1;
-                b = tempC;
-                tempC = undefined;
-
+                down();
                 p *= 2;
-                while (b !== 1) {
-                    // down
-                    // [b,c] = [c, b - c - 1];
-                    // Becomes:
-                    tempC = c;
-                    c = b - c -1;
-                    b = tempC;
-                    tempC = undefined;
 
+                while (b !== 1) {
+                    down();
                     p *= 2
                 }
                 p += 1;
@@ -71,189 +42,155 @@ var  smoothsort= (function (undefined) {
             r += 1;
         }
         r1 = r;
-        trinkle(p, b, c);
-        while (1 < q) {
+        trinkle();
+        while (1 !== q) {
             q -= 1;
             if (b === 1) {
                 r -= 1;
                 p -= 1;
-                while ( p && !(p%2)) { // even(p)
+                while ( even(p)) {
                     p = Math.floor(p/2);
-                    tempB = b;
-                    b = tempB + c + 1;
-                    c = tempB;
-                    tempB = undefined;
+                    up();
                 }
-            } else if(3 <= b) {
+            } else if (b >= 3) {
                 p -= 1;
                 r = r - b + c;
-                if (p > 0) {
-                    semitrinkle(p, b ,c);
+                if (p === 0) {
+                    skip();
+                } else { // p > 0
+                    semitrinkle();
                 }
-                //  [b, c] = [c, b - c - 1];
-                // Becomes
-                tempC = c;
-                c = b - c -1;
-                b = tempC;
-                tempC = undefined;
 
-                p = 2*p +1;
+                down();
+                p = 2 * p + 1;
                 r += c;
                 semitrinkle(p, b, c);
-                //  [b, c] = [c, b - c - 1];
-                // Becomes
-                tempC = c;
-                c = b - c -1;
-                b = tempC;
-                tempC = undefined;
 
-                p = 2*p +1;
+                down();
+                p = 2 * p + 1;
 
             }
         }
 
         return m;
 
+        function skip () {}
 
-        function sift(b1, c1) {
+        function even (val) {
+            return Boolean(val) && !(val%2);
+        }
+        function up () {
+            //[b, c] = [b + c + 1, b];
+            // Becomes:
+            var tempB = b;
+            b += c + 1;
+            c = tempB;
+        }
+
+        function down () {
+            //[b, c] = [c, b - c - 1];
+            var tempB = b;
+            b = c;
+            c = tempB - c - 1;
+        }
+
+        function up1 () {
+            //[b1, c1] = [b1 + c1 + 1, b1];
+            // Becomes:
+            var tempB1 = b1;
+            b1 += c1 + 1;
+            c1 = tempB1;
+        }
+
+        function down1 () {
+            //[b1, c1] = [c1, b1 - c1 - 1];
+            var tempB1 = b1;
+            b1 = c1;
+            c1 = tempB1 - c1 - 1;
+        }
+
+        function mSwap(indexA, indexB) {
+            var temp = m[indexA];
+            m[indexA] = m[indexB];
+            m[indexB] = temp;
+        }
+
+        function sift() {
             var r2;
-            // in place swap variables
-            var tempC1, tempMR1;
             while (b1 >= 3) {
                 r2 = r1 - b1 + c1;
                 if (m[r2] >= m[r1 - 1]) { //m[r2] >= m[r1 - 1]
-                    //skip
+                    skip();
                 } else {//else m[r2] <= m[r1 - 1]
                     r2 = r1 - 1;
-                    //down1
-                    // [b1, c1] = [c1, b1 - c1 - 1];
-                    // becomes:
-                    // let tempB = b1;
-                    tempC1 = c1;
-                    c1 = b1 - c1 - 1;
-                    b1 = tempC1;
-                    tempC1 = undefined;
+                    down1();
                 }
 
                 if (m[r1] >= m[r2]) { // m[r1] >= m[r2]
                     b1 = 1;
                 } else { //m[r1] < m[r2]
-                    //[m[r1], m[r2]] = [m[r2], m[r1]]
-                    // Becomes:
-                    tempMR1 = m[r1];
-                    m[r1] = m[r2];
-                    m[r2] = tempMR1;
-                    tempMR1 = undefined;
-
+                    mSwap(r1, r2);
                     r1 = r2;
-                    // down1
-                    // [b1, c1] = [c1, b1 - c1 - 1];
-                    // becomes:
-                    tempC1 = c1;
-                    c1 = b1 - c1 - 1;
-                    b1 = tempC1;
-                    tempC1 = undefined;
+                    down1();
                 }
-                r2 = undefined;
             }
-
         }
 
-
-
-        function semitrinkle(p, b, c) {
-            var tempMR;
+        function semitrinkle() {
             r1 = r - c;
-            // m[r1] <= m[r] -> skip
-            if (m[r1] <= m[r]) {
-                // skip
-            } else if (m[r1] > m[r]) { // m[r1] > m[r]
-                // [m[r], m[r1] = [m[r1], m[r]];
-                // Becomes:
-                tempMR = m[r];
-                m[r] = m[r1];
-                m[r1] = tempMR;
-                trinkle(p, b, c);
+            if (m[r1] <= m[r]) { // m[r1] <= m[r]
+                skip();
+            } else { // m[r1] > m[r]
+                mSwap(r, r1);
+                trinkle();
             }
         }
 
-        function trinkle(p1, b1, c1) {
+        function trinkle() {
             // 'let scope' variables :
-            var r2, r3, tempB1, tempMR1, tempC1;
-            while (p1 > 0) {
-                while (p1 && !(p1%2)) { // even(p1)
-                    p1 = Math.floor(p1/2);
-                    // up1
-                    // [b1,c1] = [b1+ c1+1, b1];
-                    // becomes
-                    tempB1 = b1;
-                    b1 = b1 + c1 + 1;
-                    c1 = tempB1;
-                    tempB1 = undefined;
+            var r2, r3;
+            p1 = p;
+            b1 = b;
+            c1 = c;
 
+            while (p1 > 0) {
+                while (even(p1)) {
+                    p1 = Math.floor(p1/2);
+                    up1();
                 }
                 r3 = r1 - b1;
 
-                if (p1===1 || m[r3] <= m[r1]) { //p1===1 || m[r3] <= m[r1]
+                if (p1 === 1 || m[r3] <= m[r1]) { //p1 === 1 || m[r3] <= m[r1]
                     p1 = 0;
                 } else {  // p1 > 1 && m[r3] > m[r1]
                     p1 -= 1;
                     if (b1 === 1) {
-                        // [m[r1], m[r3]] = [m[r3], m[r1]];
-                        // becomes
-                        tempMR1 = m[r1];
-                        m[r1] = m[r3];
-                        m[r3] = tempMR1;
-                        tempMR1 = undefined;
-
+                        mSwap(r1, r3);
+                        r1 = r3;
                     } else if (b1 >= 3) {
                         r2 = r1 - b1 + c1;
 
                         if (m[r2] >= m[r1 - 1]) { //m[r2] >= m[r1 - 1]
-                            // skip
+                            skip();
                         } else { // m[r2] <= m[r1 -1]
-                            r2 = r1 -1;
-                            // down1
-                            // [b1, c1] = [c1, b1 - c1 - 1]
-                            // becomes:
-                            tempC1 = c1;
-                            c1 = b1 - c1 - 1;
-                            b1 = tempC1;
-                            tempC1 = undefined;
-
+                            r2 = r1 - 1;
+                            down1();
                             p1 *= 2;
                         }
 
                         if (m[r3] >= m[r2]) { // m[r3] >= m[r2]
-                            //[m[r1], m[r3]] = [m[r3], m[r1]];
-                            tempMR1 = m[r1];
-                            m[r1] = m[r3];
-                            m[r3] = tempMR1;
-                            tempMR1 = undefined;
+                            mSwap(r1, r3);
                             r1 = r3;
                         } else { // m[r3] <= m[r2]
-                            // [m[r1], m[r2]] = [m[r2], m[r1]];
-                            tempMR1 = m[r1];
-                            m[r1] = m[r2];
-                            m[r2] = tempMR1;
-                            tempMR1 = undefined;
+                            mSwap(r1, r2);
                             r1 = r2;
-                            // down1
-                            // [b1, c1] = [c1, b1 - c1 - 1]
-                            // becomes:
-                            tempC1 = c1;
-                            c1 = b1 - c1 - 1;
-                            b1 = tempC1;
-                            tempC1 = undefined;
+                            down1();
                             p1 = 0;
                         }
-                        r2 = undefined;
                     }
                 }
-                r3 = undefined;
             }
-
-            sift(b1, c1);
+            sift();
         }
     };
 })();
