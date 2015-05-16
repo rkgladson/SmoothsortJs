@@ -22,18 +22,22 @@
         return length - index;
     }
 
-    var m = newArray(Math.pow(2, 16) - 1, reversedIndex),
-        smoothM = smoothsort(m.slice()),
-        mSorted = m.slice().sort(comp),
-        ok = true,
-        i;
-    for (i = m.length - 1; 0 <= i && ok; i -= 1 ) {
-        if (mSorted[i] !== smoothM[i]) {
-            ok = false;
-            console.error('Set', mSorted[i-1], mSorted[i], mSorted[i+1],
-                ' does not equal ', smoothM[i-1], smoothM[i], smoothM[i+1]);
+    var m, smoothM, mSorted, ok, i, power = 16;
+
+    while (power){
+        m = newArray(Math.pow(2, power) - 1, reversedIndex);
+        smoothM = smoothsort(m.slice());
+        mSorted = m.slice().sort(comp);
+        ok = true;
+        for (i = m.length - 1; 0 <= i && ok; i -= 1 ) {
+            if (mSorted[i] !== smoothM[i]) {
+                ok = false;
+                console.error('Set', mSorted[i-1], mSorted[i], mSorted[i+1],
+                    ' does not equal ', smoothM[i-1], smoothM[i], smoothM[i+1]);
+            }
         }
+        if (ok) console.log('Sorts are identical at lengths of: 2^' + power);
+        power -= 1;
     }
-    if (ok) console.log('Sorts are identical');
     //console.log(smoothM);
 }(smoothsort));
