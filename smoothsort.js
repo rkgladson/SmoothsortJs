@@ -57,9 +57,8 @@ var  smoothsort= (function (undefined) {
             } else if (b >= 3) {
                 p -= 1;
                 r = r - b + c;
-                if (p === 0) {
-                    skip();
-                } else { // p > 0
+                //(p === 0) && skip();
+                if ( p > 0 ) {
                     semitrinkle();
                 }
 
@@ -75,10 +74,6 @@ var  smoothsort= (function (undefined) {
         }
 
         return m;
-
-        function skip () {}
-
-
 
         function sift() {
             var r2;
