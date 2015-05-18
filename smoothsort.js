@@ -5,7 +5,10 @@
 
 var  smoothsort= (function (undefined) {
     "use strict";
-    return function smoothSortReference(array) {
+    function ascending (apple, orange) {
+        return -(apple > orange) || +(apple < orange);
+    }
+    return function smoothSortReference(array, compareFn) {
         var r1,
             p = 1, b = 1, c = 1,
             p1, b1, c1,
@@ -13,6 +16,7 @@ var  smoothsort= (function (undefined) {
             r = 0,
             m = (array || []),
             N = m.length;
+        var comp = typeof compareFn === 'function' ? compareFn : ascending;
         // swap vars:
         var tempB;
         if (N < 2) { // Nothing to sort when less than 2 items
@@ -24,7 +28,8 @@ var  smoothsort= (function (undefined) {
             if (p % 8 === 3) {
                 b1 = b; c1 = c; sift();
                 p = Math.floor((p + 1) / 4);
-                /*up: */tempB = b;   b += c + 1;  c = tempB; /*up: */tempB = b;   b += c + 1;  c = tempB;
+                /*up: */tempB = b;   b += c + 1;  c = tempB;
+                /*up: */tempB = b;   b += c + 1;  c = tempB;
             } else if (p % 4 === 1) {
                 if (q + c < N) {
                     b1 = b; c1 = c; sift();
@@ -82,12 +87,12 @@ var  smoothsort= (function (undefined) {
             while (b1 >= 3) {
                 r2 = r1 - b1 + c1;
                 //m[r2] >= m[r1 - 1] && skip()
-                if ( m[r2] <= m[r1 - 1] ) {
+                if (!~comp(m[r2], m[r1 - 1])) { // m[r2] <= m[r1 - 1]
                     r2 = r1 - 1;
                     /*down1*/ tempB1 = b1; b1 = c1; c1 = tempB1 - c1 - 1;
                 }
 
-                if (m[r1] >= m[r2]) { // m[r1] >= m[r2]
+                if (~comp(m[r1], m[r2])) { // m[r1] >= m[r2]
                     b1 = 1;
                 } else { //m[r1] < m[r2]
                     /*m:swap(r1, r2); */ tempM = m[r1]; m[r1] = m[r2]; m[r2] = tempM;
@@ -102,7 +107,7 @@ var  smoothsort= (function (undefined) {
             var tempM;
             r1 = r - c;
             // m[r1] <= m[r]  && skip();
-            if (m[r1] > m[r]) {
+            if (!~comp(m[r], m[r1])) { //m[r1] > m[r]
                 /*m:swap(r, r1); */ tempM = m[r]; m[r] = m[r1]; m[r1] = tempM;
                 trinkle();
             }
@@ -125,7 +130,7 @@ var  smoothsort= (function (undefined) {
                 }
                 r3 = r1 - b1;
 
-                if (p1 === 1 || m[r3] <= m[r1]) { //p1 === 1 || m[r3] <= m[r1]
+                if (p1 === 1 || ~comp(m[r1], m[r3])) { //p1 === 1 || m[r3] <= m[r1]
                     p1 = 0;
                 } else {  // p1 > 1 && m[r3] > m[r1]
                     p1 -= 1;
@@ -137,13 +142,13 @@ var  smoothsort= (function (undefined) {
 
                         //m[r2] >= m[r1 - 1] && skip();
 
-                        if (m[r2] <= m[r1 -1]) {
+                        if (~comp(m[r1 -1], m[r2])) {//m[r2] <= m[r1 -1]
                             r2 = r1 - 1;
                             /*down1*/ tempB1 = b1; b1 = c1; c1 = tempB1 - c1 - 1;
                             p1 *= 2;
                         }
 
-                        if (m[r3] >= m[r2]) { // m[r3] >= m[r2]
+                        if (~comp(m[r3], m[r2])) { // m[r3] >= m[r2]
                             /*m:swap(r1, r3); */ tempM = m[r1]; m[r1] = m[r3]; m[r3] = tempM;
                             r1 = r3;
                         } else { // m[r3] <= m[r2]

@@ -15,7 +15,7 @@
     }
 
     function comp(apple, orange) {
-        return +(apple > orange) || -(apple < orange);
+        return -(apple < orange) || +(apple > orange);
     }
 
     function reversedIndex(index ,length) {
@@ -26,7 +26,7 @@
 
     while (power){
         m = newArray(Math.pow(2, power) - 1, reversedIndex);
-        smoothM = smoothsort(m.slice());
+        smoothM = smoothsort(m.slice(), comp);
         mSorted = m.slice().sort(comp);
         ok = true;
         for (i = m.length - 1; 0 <= i && ok; i -= 1 ) {
@@ -34,6 +34,7 @@
                 ok = false;
                 console.error('Set', mSorted[i-1], mSorted[i], mSorted[i+1],
                     ' does not equal ', smoothM[i-1], smoothM[i], smoothM[i+1]);
+                console.log(m, mSorted, smoothM);
             }
         }
         if (ok) console.log('Sorts are identical at lengths of: 2^' + power);
