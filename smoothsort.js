@@ -31,13 +31,11 @@ var  smoothsort= (function (undefined) {
                 } else {
                     trinkle();
                 }
-                /*down*/ tempB = b;  b = c;  c = tempB - c - 1;
-                p *= 2;
 
-                while (b !== 1) {
+                do {
                     /*down*/ tempB = b;  b = c;  c = tempB - c - 1;
-                    p *= 2
-                }
+                    p *= 2;
+                } while (b !== 1);
                 p += 1;
             }
             q += 1;
