@@ -121,7 +121,7 @@ var  smoothsort= (function (undefined) {
             c1 = c;
 
             while (p1 > 0) {
-                while (p1 && !(p1&1)) {
+                while (p1 && !(p1 & 1)) {
                     p1 >>>= 1;
                     /*up1:*/ tempB1 = b1; b1 += c1 + 1; c1 = tempB1;
                 }
