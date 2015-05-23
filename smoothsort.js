@@ -25,24 +25,21 @@ var  smoothsort= (function (undefined) {
 
         while (q !== N) {
             r1 = r;
-            if (p % 8 === 3) {
+            if ((p & 7) === 3) {
                 b1 = b; c1 = c; sift();
-                p = Math.floor((p + 1) / 4);
-                /*up: */tempB = b;   b += c + 1;  c = tempB;
-                /*up: */tempB = b;   b += c + 1;  c = tempB;
-            } else if (p % 4 === 1) {
+                p = (p + 1)>>>2;
+                /*up: */tempB = b;   b += c + 1;  c = tempB; /*up: */tempB = b;   b += c + 1;  c = tempB;
+            } else if ((p & 3) === 1) {
                 if (q + c < N) {
                     b1 = b; c1 = c; sift();
                 } else {
                     trinkle();
                 }
-                /*down*/ tempB = b;  b = c;  c = tempB - c - 1;
-                p *= 2;
 
-                while (b !== 1) {
+                do {
                     /*down*/ tempB = b;  b = c;  c = tempB - c - 1;
-                    p *= 2
-                }
+                    p *= 2;
+                } while (b !== 1);
                 p += 1;
             }
             q += 1;
@@ -55,8 +52,8 @@ var  smoothsort= (function (undefined) {
             if (b === 1) {
                 r -= 1;
                 p -= 1;
-                while ( p && !(p&1)) {
-                    p = Math.floor(p/2);
+                while ( p && !(p & 1)) {
+                    p >>>= 1;
                     /*up: */tempB = b;   b += c + 1;  c = tempB;
                 }
             } else if (b >= 3) {
@@ -125,7 +122,7 @@ var  smoothsort= (function (undefined) {
 
             while (p1 > 0) {
                 while (p1 && !(p1&1)) {
-                    p1 = Math.floor(p1/2);
+                    p1 >>>= 1;
                     /*up1:*/ tempB1 = b1; b1 += c1 + 1; c1 = tempB1;
                 }
                 r3 = r1 - b1;
