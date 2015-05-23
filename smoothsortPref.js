@@ -136,3 +136,8 @@ function doScience(data) {
 }
 
 var testResults = doScience(forScienceYouMonster(runTest));
+function buildWinner(value) { return [value.elements, ": ", value.winner , ' by ' + value.winnerBy].join('');}
+
+console.log("Reverse Order", testResults.reverseOrder.map(buildWinner));
+console.log("Random Order", testResults.randomOrder.map(buildWinner));
+console.log("Semi-Sorted Order", testResults.semiSorted.map(buildWinner));
